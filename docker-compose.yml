@@ -1,8 +1,9 @@
 version: '2'
 services: 
-  joomla:
+  app:
     #image: joomla:3.6.2-apache-php7
-    image: joomla:3.6.2-apache
+    #image: joomla:3.6.2-apache
+    build: ./app
     links:
      - mysql
     ports:
@@ -14,15 +15,16 @@ services:
      - ./code:/var/www/html
   
   mysql:
-    image: mysql:5.7.14
+    image: mysql:5.7.28
     environment:
      - MYSQL_ROOT_PASSWORD=12345678
-     - MYSQL_DATABASE=joomla
+     #- MYSQL_DATABASE=joomla
     volumes:
      - ./database:/var/lib/mysql
+     - ./mysql-xfer:/root/xfer
 
   phpmyadmin:
-    image: phpmyadmin/phpmyadmin:4.6.4-1
+    image: phpmyadmin/phpmyadmin:4.9
     links:
      - mysql
     ports:
