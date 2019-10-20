@@ -11,7 +11,7 @@ services:
      - "${APP_PORT}:80"
     environment:
      - JOOMLA_DB_HOST=mysql:3306
-     - JOOMLA_DB_PASSWORD=${JOOMLA_DB_PASSWORD}
+     - JOOMLA_DB_PASSWORD=${MYSQL_ROOT_PASSWORD}
      - VIRTUAL_HOST=${VIRTUAL_HOST}
      - VIRTUAL_PORT=${APP_PORT}
      - LETSENCRYPT_HOST=${VIRTUAL_HOST}
@@ -30,7 +30,7 @@ services:
     volumes:
      - ./database:/var/lib/mysql
      - ./mysql-xfer:/root/xfer
-     
+
   smtpout:
     image: namshi/smtp
     restart: always
