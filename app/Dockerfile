@@ -1,4 +1,4 @@
-FROM php:7.1-apache
+FROM php:7.3.10-apache
 LABEL maintainer="Nicolai"
 RUN a2enmod rewrite
 
@@ -8,6 +8,7 @@ RUN set -ex; \
 	savedAptMark="$(apt-mark showmanual)"; \
 	\
 	apt-get update; \
+	apt-get upgrade -y; \
 	apt-get install -y --no-install-recommends \
 		libbz2-dev \
 		libjpeg-dev \
@@ -16,8 +17,8 @@ RUN set -ex; \
 		libmemcached-dev \
 		libpng-dev \
 		libpq-dev \
-	; \
-	\
+		libzip-dev \	
+	;\
 	docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr; \
 	debMultiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)"; \
 	docker-php-ext-configure ldap --with-libdir="lib/$debMultiarch"; \
@@ -25,25 +26,22 @@ RUN set -ex; \
 		bz2 \
 		gd \
 		ldap \
-		mcrypt \
+#		mcrypt \
 		mysqli \
 		pdo_mysql \
 		pdo_pgsql \
 		pgsql \
 		zip \
 	; \
-	\
 # pecl will claim success even if one install fails, so we need to perform each install separately
 	pecl install APCu-5.1.17; \
 	pecl install memcached-3.1.4; \
 	pecl install redis-4.3.0; \
-	\
 	docker-php-ext-enable \
 		apcu \
 		memcached \
 		redis \
 	; \
-	\
 # reset apt-mark's "manual" list so that "purge --auto-remove" will remove all build dependencies
 	apt-mark auto '.*' > /dev/null; \
 	apt-mark manual $savedAptMark; \
