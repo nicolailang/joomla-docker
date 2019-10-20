@@ -8,10 +8,17 @@ services:
     links:
      - mysql
     ports:
-     - "80:80"
+     - "${APP_PORT}:80"
     environment:
      - JOOMLA_DB_HOST=mysql:3306
      - JOOMLA_DB_PASSWORD=${JOOMLA_DB_PASSWORD}
+     - VIRTUAL_HOST=${VIRTUAL_HOST}
+     - VIRTUAL_PORT=${APP_PORT}
+     - LETSENCRYPT_HOST=${VIRTUAL_HOST}
+     - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
+    networks:
+      - web
+      - internalnet
     volumes:
      - ./code:/var/www/html
   
@@ -23,12 +30,27 @@ services:
     volumes:
      - ./database:/var/lib/mysql
      - ./mysql-xfer:/root/xfer
+     
+  smtpout:
+    image: namshi/smtp
+    restart: always
+    networks:
+      - internalnet
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:4.9
     links:
      - mysql
     ports:
-     - "81:80"
+     - "${PHPMYADMIN_PORT}:80"
     environment:
      - PMA_HOST=mysql
+    networks:
+      - internalnet
+      - web
+
+networks: 
+  web:
+    external:
+      name: ${PROXY_NETWORK}
+  internalnet:
